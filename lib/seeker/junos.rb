@@ -6,6 +6,10 @@ module Seeker
     KNOWN = %w( apply-flags apply-macro inherit )
     CHARS = ('a'..'z').to_a + ('0'..'9').to_a + %w( - )
     REPORT_INTERVAL = 10*60
+    INVALID_INTERFACES = [
+      /^error: invalid interface type/,
+      /^error: missing or invalid (?:device|fpc) number/,
+    ]
 
     def seek
       @ssh = ssh_connect
@@ -47,31 +51,30 @@ module Seeker
           @cmd << c
           find_hidden
           @cmd.pop
-        else
-          #not valid
         end
       end
     end
 
     def valid? output
-      valid = false
+      valid = true
       output = output.split "\n"
       output = output[1..-1]
-      return false if output[0].match(/^error: invalid interface type/)
-      return false if output[0].match(/^error: missing or invalid (?:device|fpc) number/)
-      valid = true if output[1].match(/^\[edit/)
-      output = output.first.sub(/^(\s+).*/, '\1')
-      valid = true if output.size >= @min_space
+      if output[1].match(/^syntax error\./)
+        output = output.first.sub(/^(\s+).*/, '\1')
+        valid = false if output.size < @min_space
+      end
+      valid = false if INVALID_INTERFACES.any? {|re| output[0].match re}
       valid
     end
 
     def complete? output
-      complete = true
       output = output.split "\n"
       output = output[1..-1]
-      complete = false if output[0].match(/^error: syntax error:/)
-      complete = false if output[1].match(/ is ambiguous\./)
+      complete = true
       complete = false if output[1].match(/^syntax error\./)
+      complete = false if output[1].match(/ is ambiguous\./)
+      complete = false if output[0].match(/^error: syntax error:/)
+      complete = false if INVALID_INTERFACES.any? {|re| output[0].match re}
       complete
     end
 

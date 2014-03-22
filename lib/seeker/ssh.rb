@@ -30,12 +30,13 @@ module Seeker
       @session     = nil
       @ssh = Net::SSH.start host, user, :password=>password, :timeout=>TIMEOUT
       shell_open
+      expect @prompt
     end
 
     def shell_open
       @session = @ssh.open_channel do |channel|
         channel.on_data do |channel, data|
-          print data  if Seeker.debug > 1
+          $stderr.print data  if Seeker.debug > 1
           @output << data
         end
         channel.request_pty do |channel, success|
