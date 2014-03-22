@@ -3,7 +3,8 @@ require 'net/ssh'
 module Seeker
   class SSH
     TIMEOUT = 5
-    PROMPT = /^[^\s>#]+[>#] /
+    PROMPT  = /^[^\s>#]+[>#] /
+    SLEEP   = 0.001
     attr_reader :prompt_seen
     class NoSshShell < SeekerError; end
 
@@ -48,8 +49,8 @@ module Seeker
 
     def expect regexp
       Timeout::timeout(TIMEOUT) do
-        @ssh.loop(0.1) do
-          sleep 0.1
+        @ssh.loop(SLEEP) do
+          sleep SLEEP
           re = @output.match regexp
           @prompt_seen = re[0] if re
           not re
