@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby20
+
+$: << '/home/fisakytt/tmp/seeker/lib'
+
+begin
+  require 'seeker/junos/cli'
+  p Seeker::JunosCLI.new.result
+rescue => error
+  warn "#{error}"
+  raise if Seeker.debug > 0
+end
