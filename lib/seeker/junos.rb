@@ -41,6 +41,7 @@ module Seeker
         o = @ssh.cmd 'set ' + cmd
         if complete? o
           Log.info "Found: '#{cmd}'"
+          @report += REPORT_INTERVAL
           @found << cmd
         elsif valid? o
           @cmd << c
