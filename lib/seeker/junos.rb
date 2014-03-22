@@ -4,7 +4,7 @@ require_relative 'ssh'
 module Seeker
   class Junos
     KNOWN = %w( apply-flags apply-macro inherit )
-    CHARS = ('a'..'z').to_a + %w( - )
+    CHARS = ('a'..'z').to_a + ('0'..'9').to_a + %w( - )
     REPORT_INTERVAL = 10*60
 
     def seek
