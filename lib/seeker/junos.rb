@@ -3,7 +3,7 @@ require_relative 'ssh'
 
 module Seeker
   class Junos
-    KNOWN = %w( apply-flags apply-macro inherit )
+    KNOWN = %w( apply-flags apply-lock apply-macro inherit )
     CHARS = ('a'..'z').to_a + ('0'..'9').to_a + %w( - )
     REPORT_INTERVAL = 10*60
     INVALID_INTERFACES = [
